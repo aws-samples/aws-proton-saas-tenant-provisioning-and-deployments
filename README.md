@@ -71,7 +71,9 @@ The three main components of this solution are:
 - Make sure you have the latest version of [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 
 ### Step 2. Fork and clone the repository
-Please fork this repository as you will make code commits to the SaaS application and see how those changes are deployed across multiple tenants, as part of deployment. Once forked, please clone the repository inside your development environment.
+Please fork this repository and name the forked repository as **"multi-tenant-proton"**, as the following cli commands assumes this as the name of the repository. By creating a fork you will be able to make code commits to the SaaS application and see how those changes are deployed across multiple tenants, as part of deployment. 
+
+Once forked, please clone the repository inside your development environment.
 
 The following steps assume you are in the root folder of the repository. Use below command to change to the correct working directory.
 

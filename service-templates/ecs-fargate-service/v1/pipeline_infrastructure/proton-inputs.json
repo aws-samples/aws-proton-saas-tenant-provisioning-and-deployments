@@ -9,7 +9,7 @@
   "service": {
     "name": "container-saas-app",
     "repository_connection_arn": "arn:aws:codestar-connections:us-west-2:xxxxxxxxxxxx:connection/5bb6269a-e036-47a5-9608-f4eeb6de3473",
-    "repository_id": "anubhavynr/multi-tenant-proton",
+    "repository_id": "<<GITHUBUSERNAME>>/multi-tenant-proton",
     "branch_name": "main"
   },
   "service_instances": [

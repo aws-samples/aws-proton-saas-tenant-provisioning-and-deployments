@@ -1,0 +1,38 @@
+{
+  "pipeline": {
+    "inputs": {
+      "buildspecfile": "serverless-saas-application/buildspec.yml",
+      "totalwaves": 1
+    }
+  },
+  "service": {
+    "name": "serverless-saas-app",
+    "repository_connection_arn": "arn:aws:codestar-connections:us-west-2:xxxxxxxxxxxx:connection/104e7f4a-12ed-4b2f-8990-32e23ef63533",
+    "repository_id": "anubhavynr/multi-tenant-proton",
+    "branch_name": "main"
+  },
+  "service_instances": [
+    {
+      "name": "tenantA-serverless-saas-app",
+      "inputs": {
+        "lambda_artifact_bucket": "",
+        "lambda_artifact_key": "lambda_functions.zip",
+        "lambda_reserved_concurrency": 100
+      },
+      "environment": {
+        "account_id": "xxxxxxxxxxxx",
+        "name": "tenantAEnv",
+        "outputs": {
+          "TenantId": "tenantA",
+          "ECSClusterArn": "arn:aws:ecs:us-west-2:xxxxxxxxxxxx:cluster/tenantAEnv",
+          "ECSClusterSecGrps": "[]",
+          "VPCId": "vpc-0d0b57f389ace2f7f",
+          "ECSClusterName": "tenantAEnv",
+          "ECSClusterSDNamespace": "tenantA.saasapp.com",
+          "BucketName":	"tenantaenv-tenantadata38858511-1q2jrdt0w6uvv",
+          "BucketArn":	"arn:aws:s3:::tenantaenv-tenantadata38858511-1q2jrdt0w6uvv"
+        }
+      }
+    }
+  ]
+}

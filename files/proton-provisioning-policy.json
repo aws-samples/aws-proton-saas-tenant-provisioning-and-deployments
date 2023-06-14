@@ -1,0 +1,111 @@
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Effect": "Allow",
+			"Action": [				
+				"proton:*"
+			],
+			"Resource": [
+				"arn:aws:proton:*:*:*"
+			]
+		},
+		{
+			"Effect": "Allow",
+			"Action": [
+				"ec2:DescribeAvailabilityZones"
+			],
+			"Resource": [
+				"*"
+			]
+		},
+		{
+			"Effect": "Allow",
+			"Action": [
+				"iam:PutRolePolicy",
+				"iam:GetRolePolicy",
+				"iam:GetRole",
+				"iam:CreateRole",
+				"iam:AttachRolePolicy"
+			],
+			"Resource": "*"
+		},
+		{
+			"Effect": "Allow",
+			"Action": [
+				"cloudformation:CreateChangeSet",
+				"cloudformation:DescribeChangeSet",
+				"cloudformation:DescribeStackEvents",
+				"cloudformation:ExecuteChangeSet",
+				"cloudformation:GetTemplate",
+				"cloudformation:DescribeStacks",
+				"cloudformation:ListStacks",
+				"cloudformation:DeleteChangeSet"
+			],
+			"Resource": [
+				"*"
+			]
+		},
+		{
+			"Effect": "Allow",
+			"Action": [
+				"ecr:GetLifecyclePolicy",
+				"ecr:GetRepositoryPolicy",
+				"ecr:ListTagsForResource",
+				"ecr:SetRepositoryPolicy",
+				"ecr:TagResource",
+				"ecr:CreateRepository",
+				"ecr:DescribeRepositories"
+			],
+			"Resource": [				
+				"*"
+			]
+		},
+		{
+			"Effect": "Allow",
+			"Action": [
+				"sts:AssumeRole",
+				"sts:GetCallerIdentity"
+			],
+			"Resource": [
+				"*"
+			]
+		},
+		{
+			"Effect": "Allow",
+			"Action": [
+				"logs:CreateLogStream",
+				"logs:CreateLogGroup",
+				"logs:PutLogEvents"
+			],
+			"Resource": [
+				"*"
+			]
+		},
+		{
+			"Effect": "Allow",
+			"Action": [
+				"s3:CreateBucket",
+				"s3:GetBucketPolicy",
+				"s3:PutBucketPolicy",
+				"s3:PutBucketPublicAccessBlock",
+				"s3:PutBucketVersioning",
+				"s3:PutEncryptionConfiguration"
+			],
+			"Resource": [
+				"*"
+			]
+		},
+		{
+			"Effect": "Allow",
+			"Action": [
+				"ssm:GetParameter",
+				"ssm:GetParameters",
+				"ssm:PutParameter"
+			],
+			"Resource": [
+				"*"
+			]
+		}
+	]
+}

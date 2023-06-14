@@ -1,0 +1,30 @@
+{
+  "environment": {
+    "account_id": "xxxxxxxxxxxx",
+    "name": "tenantAEnv",
+    "outputs": {
+      "ECSClusterArn": "arn:aws:ecs:us-west-2:xxxxxxxxxxxx:cluster/tenantAEnv",
+      "ECSClusterSecGrps": "[]",
+      "VPCId": "vpc-0d0b57f389ace2f7f",
+      "ECSClusterName": "tenantAEnv",
+      "ECSClusterSDNamespace": "tenantA.saasapp.com"
+    }
+  },
+  "service": {
+    "name": "container-saas-app",
+    "repository_connection_arn": "",
+    "repository_id": "",
+    "branch_name": ""
+  },
+  "service_instance": {
+    "name": "tenantA-container-saas-app",
+    "inputs": {
+      "port": 8080,
+      "desired_count": 1,
+      "task_size": "x-small",
+      "image": "public.ecr.aws/aws-containers/proton-demo-image:latest",
+      "load_balanced": true,
+      "load_balanced_public": true
+    }
+  }
+}

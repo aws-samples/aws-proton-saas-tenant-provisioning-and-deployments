@@ -1,0 +1,5 @@
+{
+  "tenantA-serverless-saas-app": {
+    "SaaSApptenantAapiEndpointBEB9DECA": "https://4xlwvhzrj8.execute-api.us-west-2.amazonaws.com/prod/"
+  }
+}

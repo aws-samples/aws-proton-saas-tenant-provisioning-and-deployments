@@ -1,0 +1,20 @@
+infrastructure:
+  templates:
+    - rendering_engine: codebuild
+      settings:
+        image: aws/codebuild/amazonlinux2-x86_64-standard:4.0
+        runtimes:
+          nodejs: 16
+        provision:
+          # Run when create/update is triggered for environment or service
+          # Install dependencies
+          - npm install
+          - npm run build
+          - npm run cdk bootstrap
+          - npm run cdk -- deploy --require-approval never
+          # Notify AWS Proton of deployment status
+          - aws proton notify-resource-deployment-status-change --resource-arn $RESOURCE_ARN --status SUCCEEDED 
+        deprovision:
+          # Install dependencies and destroy resources
+          - npm install
+          - npm run cdk -- destroy --force

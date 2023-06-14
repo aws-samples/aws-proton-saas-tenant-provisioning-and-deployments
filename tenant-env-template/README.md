@@ -1,0 +1,1 @@
+# TODO: Add readme to deploy the tenant environment independently

@@ -1,0 +1,39 @@
+{
+  "pipeline": {
+    "inputs": {
+      "dockerfile": "Dockerfile",
+      "buildspecfile": "containerized-saas-application/buildspec.yml",
+      "totalwaves": 1
+    }
+  },
+  "service": {
+    "name": "container-saas-app",
+    "repository_connection_arn": "arn:aws:codestar-connections:us-west-2:xxxxxxxxxxxx:connection/5bb6269a-e036-47a5-9608-f4eeb6de3473",
+    "repository_id": "anubhavynr/multi-tenant-proton",
+    "branch_name": "main"
+  },
+  "service_instances": [
+    {
+      "name": "tenant1-service",
+      "inputs": {
+        "port": 80,
+        "desired_count": 1,
+        "task_size": "x-small",
+        "image": "",
+        "load_balanced": true,
+        "load_balanced_public": true
+      },
+      "environment": {
+        "account_id": "xxxxxxxxxxxx",
+        "name": "tenant1-environment",
+        "outputs": {
+          "ECSClusterArn": "arn:aws:ecs:us-west-2:xxxxxxxxxxxx:cluster/tenant1-environment",
+          "ECSClusterSecGrps": "[]",
+          "VPCId": "vpc-03a00d981d672c294",
+          "ECSClusterName": "tenant1-environment",
+          "ECSClusterSDNamespace": "tenant1.saasapplication.com"
+        }
+      }
+    }
+  ]
+}

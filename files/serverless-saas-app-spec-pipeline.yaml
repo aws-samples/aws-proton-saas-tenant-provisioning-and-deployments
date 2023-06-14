@@ -1,0 +1,5 @@
+proton: "ServiceSpec"
+pipeline:
+  buildspecfile: "serverless-saas-application/buildspec.yml" 
+  totalwaves: 2
+instances: []

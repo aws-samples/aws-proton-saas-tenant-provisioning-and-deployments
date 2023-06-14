@@ -1,0 +1,52 @@
+---
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      docker: 18
+    commands:
+      - pip3 install --upgrade --user awscli
+      - wget -O /tmp/yq_linux_amd64.tar.gz https://github.com/mikefarah/yq/releases/download/v4.30.8/yq_linux_amd64.tar.gz
+      - tar -xvzf /tmp/yq_linux_amd64.tar.gz && mv yq_linux_amd64 /usr/bin/yq
+  pre_build:
+    commands:
+      - cd $CODEBUILD_SRC_DIR
+      - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+  build:
+    commands:
+      - cd containerized-saas-application/
+      - IMAGE_REPO_NAME=$repo_name
+      - IMAGE_TAG=$CODEBUILD_BUILD_NUMBER
+      - IMAGE_ID=$aws_account_id.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG -f $dockerfile .
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $IMAGE_ID;
+      - docker push $IMAGE_ID
+      - cd ..
+  post_build:
+    commands:
+      - aws proton --endpoint-url
+        https://proton.$AWS_DEFAULT_REGION.amazonaws.com --region
+        $AWS_DEFAULT_REGION get-service --name $service_name | jq -r
+        .service.spec > service_spec.yaml
+      - IMAGE=$IMAGE_ID yq -i '.instances[].spec.image = strenv(IMAGE)' service_spec.yaml
+      - service_spec=$(sed "s/\"/'/g" service_spec.yaml)
+      - cat service_spec.yaml
+      - #Add the deployment wave number from tag to the instances array
+      - instances=$(yq eval '.instances[]' service_spec.yaml )
+      - no_of_instances=$(yq eval ".instances | length" "service_spec.yaml")
+      - |
+        for (( i=0; i<$no_of_instances; i++ ))
+        do
+          instance_name=$(yq eval ".instances[$i].name" "service_spec.yaml")
+          deployment_wave_number=$(aws proton list-tags-for-resource --resource-arn arn:aws:proton:$AWS_DEFAULT_REGION:$aws_account_id:service/$service_name/service-instance/$instance_name | jq -c '.tags[] | select(.key | contains("deployment_wave_number")) | .value | tonumber' )
+          DEPLOYMENT_WAVE_NO=$deployment_wave_number yq -i ".instances[$i].deployment_wave_number = env(DEPLOYMENT_WAVE_NO)" service_spec.yaml
+        done
+      - #done adding deployment wave number
+      - yq -o=json '.' service_spec.yaml > service_spec.json
+      - jq --arg servicename "$service_name" '. + {service_name:$servicename}' service_spec.json  > service_spec_modified.json
+      - jq --arg service_spec "$service_spec" '. + {service_spec:$service_spec}' service_spec_modified.json > build_output.json
+      - cat build_output.json
+artifacts:
+  discard-paths: yes
+  files:
+    - build_output.json

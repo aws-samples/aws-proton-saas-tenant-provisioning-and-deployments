@@ -1,0 +1,40 @@
+schema:
+  format:
+    openapi: "3.0.0"
+  service_input_type: "ServerlessServiceInputs"
+  pipeline_input_type: "PipelineInputs"
+  types:
+    ServerlessServiceInputs:
+      type: object
+      description: "Input properties for a serverless service"
+      properties:
+        lambda_reserved_concurrency:
+          title: "Lambda Reserved Concurrency"
+          type: number
+          description: "Reserved Concurrency for Lambda Functions"
+          default: 100
+          minimum: 0
+          maximum: 1000
+        lambda_artifact_bucket:
+          title: "S3 Bucket for Artifacts"
+          type: string
+          description: "S3 Bucket for Lambda Function Artifacts (leave empty at time of instance creation)"
+          default: ""
+        lambda_artifact_key:
+          title: "S3 Key for Artifacts"
+          type: string
+          description: "S3 Key for Lambda Function Artifacts (Publish lambda zip inside Environment S3 bucket initially, then automatically updated as part of pipeline)"
+          default: "lambda_functions.zip"
+    PipelineInputs:
+      type: object
+      description: "Pipeline input properties"
+      properties:
+        buildspecfile:
+          type: string
+          description: "BuildSpecFile"
+          default: "serverless-saas-application/buildspec.yml"
+        totalwaves:
+          type: number
+          description: "total number of deployment waves"
+          default: 1
+          minLength: 1

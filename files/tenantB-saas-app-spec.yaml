@@ -1,0 +1,16 @@
+proton: "ServiceSpec"
+pipeline:
+  dockerfile: "Dockerfile"
+  buildspecfile: "containerized-saas-application/buildspec.yml"
+  totalwaves: 1
+instances:
+- name: "tenantB-saas-app"
+  environment: "tenantBEnv"
+  spec:
+    port: 80
+    desired_count: 2
+    task_size: "small"
+    service_discovery_name: "t2.saasapp.com"
+    load_balanced: true
+    load_balanced_public: true
+    image: "public.ecr.aws/nginx/nginx:stable"

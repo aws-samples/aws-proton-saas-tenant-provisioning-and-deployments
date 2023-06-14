@@ -1,0 +1,6 @@
+proton: "ServiceSpec"
+pipeline:
+  dockerfile: "Dockerfile"
+  buildspecfile: "containerized-saas-application/buildspec.yml"
+  totalwaves: 2
+instances: []

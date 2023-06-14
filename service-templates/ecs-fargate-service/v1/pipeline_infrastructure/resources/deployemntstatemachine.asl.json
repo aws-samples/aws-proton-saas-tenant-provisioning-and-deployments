@@ -1,0 +1,170 @@
+{
+  "StartAt": "Assign total waves",
+  "States": {
+    "Assign total waves": {
+      "Type": "Pass",
+      "Next": "Iterator",
+      "Result": {
+        "total_waves": "${TOTAL_WAVES}",
+        "index": 0,
+        "step": 1
+      },
+      "ResultPath": "$.iterator"
+    },
+    "Iterator": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "${ITERATOR_LAMBDA_ARN}:$LATEST"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "Map State"
+    },
+    "All Waves Deployed?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.iterator.continue",
+          "BooleanEquals": true,
+          "Next": "Wait for next wave approval"
+        }
+      ],
+      "Default": "Deployment Complete"
+    },
+    "Deployment Complete": {
+      "Type": "Pass",
+      "End": true
+    },
+    "Map State": {
+      "Type": "Map",
+      "Parameters": {
+        "instance.$": "$$.Map.Item.Value",
+        "service_spec.$": "$.service_spec",
+        "service_name.$": "$.service_name",
+        "current_wave_number.$": "$.iterator.index"
+      },
+      "Iterator": {
+        "StartAt": "Instance in current wave?",
+        "States": {
+          "Instance in current wave?": {
+            "Type": "Choice",
+            "Choices": [
+              {
+                "Variable": "$.instance.deployment_wave_number",
+                "NumericEqualsPath": "$.current_wave_number",
+                "Next": "UpdateServiceInstance"
+              }
+            ],
+            "Default": "Skip Deployment"
+          },
+          "Skip Deployment": {
+            "Type": "Pass",
+            "End": true
+          },
+          "UpdateServiceInstance": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::aws-sdk:proton:updateServiceInstance",
+            "Parameters": {
+              "DeploymentType": "CURRENT_VERSION",
+              "Name.$": "$.instance.name",
+              "ServiceName.$": "$.service_name",
+              "Spec.$": "$.service_spec"
+            },
+            "Next": "Wait 60 Seconds",
+            "Retry": [{
+              "ErrorEquals": ["States.TaskFailed"],
+              "IntervalSeconds": 3,
+              "MaxAttempts": 2,
+              "BackoffRate": 1
+            }],
+            "Catch": [{
+              "ErrorEquals": [ "States.TaskFailed" ],
+              "Next": "Skip Deployment"
+            }]
+          },
+          "Wait 60 Seconds": {
+            "Type": "Wait",
+            "Next": "Get Deployment Status",
+            "Seconds": 60
+          },
+          "Get Deployment Status": {
+            "Type": "Task",
+            "Next": "Deployment Complete?",
+            "Parameters": {
+              "Name.$": "$.ServiceInstance.Name",
+              "ServiceName.$": "$.ServiceInstance.ServiceName"
+            },
+            "Resource": "arn:aws:states:::aws-sdk:proton:getServiceInstance"
+          },
+          "Deployment Complete?": {
+            "Type": "Choice",
+            "Choices": [
+              {
+                "Variable": "$.ServiceInstance.DeploymentStatus",
+                "StringEquals": "FAILED",
+                "Next": "Deployment Failed"
+              },
+              {
+                "Variable": "$.ServiceInstance.DeploymentStatus",
+                "StringEquals": "SUCCEEDED",
+                "Next": "Deployment Succeeded"
+              }
+            ],
+            "Default": "Wait 60 Seconds"
+          },
+          "Deployment Succeeded": {
+            "Comment": "Placeholder for a state which handles the success.",
+            "Type": "Pass",
+            "End": true
+          },
+          "Deployment Failed": {
+            "Type": "Fail",
+            "Error": "Instance deployment failed"
+          }
+        }
+      },
+      "ItemsPath": "$.instances",
+      "Next": "All Waves Deployed?",
+      "ResultPath": null
+    },
+    "Wait for next wave approval": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sqs:sendMessage.waitForTaskToken",
+      "Parameters": {
+        "QueueUrl": "${APPROVAL_QUEUE_URL}",
+        "MessageBody": {
+          "MessageTitle": "Waiting for next deployment to be approved",
+          "CurrentDeploymentWave.$": "$.iterator.index",
+          "TaskToken.$": "$$.Task.Token"
+        }
+      },
+      "Next": "Deployment Approved?",
+      "ResultPath": "$.TaskResult"
+    },
+    "Deployment Approved?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.TaskResult.approval_status",
+          "StringEquals": "Approved",
+          "Next": "Iterator"
+        }
+      ],
+      "Default": "Deployment Complete"
+    }
+  }
+}

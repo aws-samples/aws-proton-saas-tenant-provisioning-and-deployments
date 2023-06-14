@@ -1,0 +1,12 @@
+{
+  "tenantAEnv": {
+    "ECSClusterArn": "arn:aws:ecs:us-west-2:xxxxxxxxxxxx:cluster/tenantAEnv",
+    "BucketArn": "arn:aws:s3:::tenantaenv-tenantadata38858511-1njrh25qml2we",
+    "TenantId": "tenantA",
+    "ECSClusterSecGrps": "[]",
+    "BucketName": "tenantaenv-tenantadata38858511-1njrh25qml2we",
+    "VPCId": "vpc-0d60ccc02b80bd9ef",
+    "ECSClusterName": "tenantAEnv",
+    "ECSClusterSDNamespace": "tenantA.saasapp.com"
+  }
+}

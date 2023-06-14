@@ -1,0 +1,11 @@
+proton: "ServiceSpec"
+pipeline:
+  buildspecfile: "serverless-saas-application/buildspec.yml"  
+  totalwaves: 1
+instances:
+- name: "tenantB-serverless-saas-app"
+  environment: "tenantBEnv"
+  spec:
+    lambda_artifact_bucket: ""
+    lambda_artifact_key: "lambda_functions.zip"
+    lambda_reserved_concurrency: 200

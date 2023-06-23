@@ -1,4 +1,4 @@
-# Automating SaaS tenant provisioning and deployments with AWS Proton
+# Automating SaaS tenant provisioning and deployments with AWS Proton and AWS Step Functions
 
 Software-as-a-Service (SaaS) based delivery models set a higher standard for operational excellence. Automation is the key to success for repetitive tasks like onboarding a new customer (tenant), or deploying releases inside your SaaS environment.
 
